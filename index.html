@@ -1,17 +1,1194 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Página de Prueba</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi App">
+<meta name="theme-color" content="#0A7EA4">
+<title>Mi App Personal</title>
+
+<style>
+:root {
+--nav-height: 80px;
+--bg-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+--bg-nav: rgba(255, 255, 255, 0.95);
+--accent: #667eea;
+--accent-dark: #5568d3;
+--text: #1c1c1e;
+--text-light: #ffffff;
+--muted: #8e8e93;
+--card-bg: rgba(255, 255, 255, 0.95);
+--shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+-webkit-tap-highlight-color: transparent;
+}
+
+body {
+background: var(--bg-main);
+color: var(--text);
+height: 100vh;
+overflow: hidden;
+padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+}
+
+.views {
+height: calc(100vh - var(--nav-height) - env(safe-area-inset-top));
+padding: 20px 16px;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+
+.view {
+display: none;
+animation: fadeIn 0.3s ease;
+}
+
+.view.active {
+display: block;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+font-size: 28px;
+font-weight: 700;
+margin-bottom: 20px;
+color: var(--text-light);
+text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* CARDS */
+.card {
+background: var(--card-bg);
+border-radius: 16px;
+padding: 20px;
+margin-bottom: 16px;
+box-shadow: var(--shadow);
+backdrop-filter: blur(10px);
+}
+
+/* NOTES SECTION */
+.note-input {
+width: 100%;
+min-height: 200px;
+padding: 16px;
+border: 2px solid #e5e5ea;
+border-radius: 12px;
+font-size: 16px;
+resize: vertical;
+transition: all 0.2s;
+}
+
+.note-input:focus {
+outline: none;
+border-color: var(--accent);
+box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.btn {
+background: var(--accent);
+color: white;
+border: none;
+padding: 14px 24px;
+border-radius: 12px;
+font-size: 16px;
+font-weight: 600;
+width: 100%;
+margin-top: 12px;
+cursor: pointer;
+transition: all 0.2s;
+box-shadow: var(--shadow);
+}
+
+.btn:active {
+transform: scale(0.98);
+background: var(--accent-dark);
+}
+
+.notes-list {
+margin-top: 24px;
+}
+
+.note-item {
+background: white;
+padding: 16px;
+border-radius: 12px;
+margin-bottom: 12px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+position: relative;
+}
+
+.note-item-text {
+font-size: 15px;
+line-height: 1.4;
+color: var(--text);
+margin-bottom: 8px;
+white-space: pre-wrap;
+}
+
+.note-item-date {
+font-size: 13px;
+color: var(--muted);
+}
+
+.note-delete {
+position: absolute;
+top: 12px;
+right: 12px;
+background: #ff3b30;
+color: white;
+border: none;
+width: 28px;
+height: 28px;
+border-radius: 50%;
+font-size: 16px;
+cursor: pointer;
+transition: transform 0.2s;
+}
+
+.note-delete:active {
+transform: scale(0.9);
+}
+
+/* CALENDAR & TASKS */
+.calendar {
+background: white;
+border-radius: 16px;
+padding: 20px;
+margin-bottom: 20px;
+box-shadow: var(--shadow);
+}
+
+.calendar-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 16px;
+}
+
+.calendar-header h2 {
+font-size: 18px;
+font-weight: 600;
+}
+
+.calendar-nav {
+display: flex;
+gap: 8px;
+}
+
+.calendar-nav button {
+background: var(--accent);
+color: white;
+border: none;
+width: 32px;
+height: 32px;
+border-radius: 8px;
+font-size: 16px;
+cursor: pointer;
+}
+
+.calendar-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 8px;
+margin-top: 12px;
+}
+
+.calendar-day {
+aspect-ratio: 1;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 8px;
+font-size: 14px;
+font-weight: 500;
+transition: all 0.2s;
+}
+
+.calendar-day.header {
+color: var(--muted);
+font-weight: 600;
+font-size: 12px;
+}
+
+.calendar-day.today {
+background: var(--accent);
+color: white;
+}
+
+.calendar-day.other-month {
+color: #c7c7cc;
+}
+
+.task-input-container {
+display: flex;
+gap: 8px;
+margin-bottom: 16px;
+}
+
+.task-input {
+flex: 1;
+padding: 12px 16px;
+border: 2px solid #e5e5ea;
+border-radius: 12px;
+font-size: 15px;
+}
+
+.task-input:focus {
+outline: none;
+border-color: var(--accent);
+}
+
+.task-add {
+background: var(--accent);
+color: white;
+border: none;
+padding: 12px 20px;
+border-radius: 12px;
+font-size: 18px;
+cursor: pointer;
+}
+
+.task-list {
+margin-top: 16px;
+}
+
+.task-item {
+display: flex;
+align-items: center;
+gap: 12px;
+padding: 14px;
+background: white;
+border-radius: 12px;
+margin-bottom: 8px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.task-checkbox {
+width: 24px;
+height: 24px;
+border-radius: 50%;
+border: 2px solid var(--accent);
+cursor: pointer;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+}
+
+.task-checkbox.checked {
+background: var(--accent);
+}
+
+.task-checkbox.checked::after {
+content: '✓';
+color: white;
+font-size: 14px;
+font-weight: bold;
+}
+
+.task-text {
+flex: 1;
+font-size: 15px;
+transition: all 0.2s;
+}
+
+.task-text.completed {
+text-decoration: line-through;
+color: var(--muted);
+}
+
+.task-delete {
+background: #ff3b30;
+color: white;
+border: none;
+width: 28px;
+height: 28px;
+border-radius: 50%;
+font-size: 16px;
+cursor: pointer;
+flex-shrink: 0;
+}
+
+/* PHOTO POST STYLES */
+.photo-upload-section {
+background: white;
+border-radius: 16px;
+padding: 20px;
+margin-bottom: 20px;
+box-shadow: var(--shadow);
+}
+
+.photo-upload-input {
+display: none;
+}
+
+.photo-upload-btn {
+background: var(--accent);
+color: white;
+border: none;
+padding: 14px 24px;
+border-radius: 12px;
+font-size: 16px;
+font-weight: 600;
+width: 100%;
+cursor: pointer;
+transition: all 0.2s;
+box-shadow: var(--shadow);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+
+.photo-upload-btn:active {
+transform: scale(0.98);
+background: var(--accent-dark);
+}
+
+.photo-post {
+background: white;
+border-radius: 16px;
+overflow: hidden;
+margin-bottom: 20px;
+box-shadow: var(--shadow);
+}
+
+.photo-post-header {
+padding: 16px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #f2f2f7;
+}
+
+.photo-post-info {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.photo-post-avatar {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+background: linear-gradient(135deg, #667eea, #764ba2);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 20px;
+}
+
+.photo-post-details {
+display: flex;
+flex-direction: column;
+}
+
+.photo-post-user {
+font-weight: 600;
+font-size: 15px;
+color: var(--text);
+}
+
+.photo-post-date {
+font-size: 13px;
+color: var(--muted);
+}
+
+.photo-post-delete {
+background: #ff3b30;
+color: white;
+border: none;
+width: 32px;
+height: 32px;
+border-radius: 50%;
+font-size: 18px;
+cursor: pointer;
+transition: transform 0.2s;
+}
+
+.photo-post-delete:active {
+transform: scale(0.9);
+}
+
+.photo-post-image {
+width: 100%;
+max-height: 500px;
+object-fit: cover;
+display: block;
+background: #f0f0f0;
+}
+
+.photo-post-caption {
+padding: 16px;
+font-size: 15px;
+line-height: 1.5;
+color: var(--text);
+}
+
+/* PLANET POST STYLES */
+.planet-post {
+background: white;
+border-radius: 16px;
+overflow: hidden;
+margin-bottom: 20px;
+box-shadow: var(--shadow);
+}
+
+.planet-post-header {
+padding: 16px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #f2f2f7;
+}
+
+.planet-post-image-container {
+padding: 40px;
+display: flex;
+justify-content: center;
+align-items: center;
+background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+.planet-post-image {
+width: 200px;
+height: 200px;
+border-radius: 50%;
+object-fit: cover;
+box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 60px rgba(102, 126, 234, 0.3);
+border: 4px solid rgba(255, 255, 255, 0.2);
+background: #f0f0f0;
+}
+
+.planet-post-footer {
+padding: 16px;
+background: #f9f9f9;
+}
+
+.planet-post-name {
+font-size: 20px;
+font-weight: 700;
+color: var(--accent);
+margin-bottom: 4px;
+}
+
+.planet-post-info {
+font-size: 14px;
+color: var(--muted);
+}
+
+/* CAPTION INPUT */
+.caption-input {
+width: 100%;
+padding: 12px;
+border: 2px solid #e5e5ea;
+border-radius: 12px;
+font-size: 15px;
+margin-bottom: 12px;
+resize: vertical;
+min-height: 80px;
+}
+
+.caption-input:focus {
+outline: none;
+border-color: var(--accent);
+}
+
+/* EMPTY SECTIONS */
+.empty-state {
+text-align: center;
+padding: 60px 20px;
+color: var(--text-light);
+}
+
+.empty-state-icon {
+font-size: 64px;
+margin-bottom: 16px;
+opacity: 0.7;
+}
+
+.empty-state h2 {
+font-size: 24px;
+margin-bottom: 8px;
+}
+
+.empty-state p {
+font-size: 16px;
+opacity: 0.8;
+}
+
+/* BOTTOM NAV */
+nav {
+position: fixed;
+bottom: 0;
+left: 0;
+right: 0;
+height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+background: var(--bg-nav);
+display: flex;
+align-items: flex-start;
+justify-content: space-between;
+padding: 8px 8px env(safe-area-inset-bottom);
+border-top: 1px solid rgba(0,0,0,0.08);
+backdrop-filter: blur(20px);
+box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+}
+
+.nav-item {
+flex: 1;
+text-align: center;
+padding: 8px;
+border-radius: 12px;
+font-size: 11px;
+color: var(--muted);
+user-select: none;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.nav-item:active {
+transform: scale(0.95);
+}
+
+.nav-item.active {
+color: var(--accent);
+}
+
+.nav-icon {
+font-size: 24px;
+line-height: 1.2;
+margin-bottom: 4px;
+}
+
+.nav-center {
+width: 64px;
+height: 64px;
+background: var(--accent);
+color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 700;
+font-size: 20px;
+margin-top: -28px;
+box-shadow: var(--shadow-lg);
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.nav-center:active {
+transform: scale(0.95);
+}
+
+/* OVERLAY MENU */
+.overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 100;
+backdrop-filter: blur(4px);
+}
+
+.overlay.active {
+display: flex;
+animation: fadeIn 0.2s ease;
+}
+
+.menu {
+background: white;
+padding: 28px;
+border-radius: 20px;
+width: 85%;
+max-width: 340px;
+text-align: center;
+box-shadow: var(--shadow-lg);
+animation: slideUp 0.3s ease;
+max-height: 80vh;
+overflow-y: auto;
+}
+
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.menu h2 {
+margin-bottom: 20px;
+color: var(--text);
+font-size: 22px;
+}
+
+.menu-option {
+padding: 16px;
+background: #f2f2f7;
+border-radius: 12px;
+margin-bottom: 12px;
+font-size: 16px;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.menu-option:active {
+transform: scale(0.98);
+background: #e5e5ea;
+}
+
+.empty-notes {
+text-align: center;
+padding: 40px 20px;
+color: var(--muted);
+}
+</style>
+
 </head>
 <body>
 
-    <h1>Hola Mundo</h1>
-    <p>Este es un HTML muy básico de prueba.</p>
+<div class="views">
 
-    <button onclick="alert('Funciona!')">
-        Haz clic aquí
-    </button>
+<!-- NOTES VIEW -->
+<section id="view-d1" class="view active">
+<h1>📝 Mis Notas</h1>
+<div class="card">
+<textarea class="note-input" id="noteInput" placeholder="Escribe tu nota aquí..."></textarea>
+<button class="btn" id="saveNote">💾 Guardar Nota</button>
+</div>
+<div class="notes-list" id="notesList"></div>
+</section>
+
+<!-- CALENDAR & TASKS VIEW -->
+<section id="view-d2" class="view">
+<h1>📋 Calendario y Tareas</h1>
+
+<div class="calendar">
+<div class="calendar-header">
+<h2 id="calendarMonth"></h2>
+<div class="calendar-nav">
+<button id="prevMonth">◀</button>
+<button id="nextMonth">▶</button>
+</div>
+</div>
+<div class="calendar-grid" id="calendarGrid"></div>
+</div>
+
+<div class="card">
+<h2 style="margin-bottom: 16px; font-size: 20px;">Lista de Tareas</h2>
+<div class="task-input-container">
+<input type="text" class="task-input" id="taskInput" placeholder="Nueva tarea...">
+<button class="task-add" id="addTask">+</button>
+</div>
+<div class="task-list" id="taskList"></div>
+</div>
+</section>
+
+<!-- PHOTO POSTS VIEW (TELESCOPE) -->
+<section id="view-z1" class="view">
+<h1>🔭 Galería de Fotos</h1>
+
+<div class="photo-upload-section">
+<textarea class="caption-input" id="photoCaptionInput" placeholder="Escribe una descripción para tu foto..."></textarea>
+<input type="file" id="photoUpload" class="photo-upload-input" accept="image/*">
+<button class="photo-upload-btn" id="photoUploadBtn">
+📷 Seleccionar Foto
+</button>
+</div>
+
+<div id="photoPostsList"></div>
+</section>
+
+<!-- PLANET POSTS VIEW -->
+<section id="view-z2" class="view">
+<h1>🪐 Sistema Solar</h1>
+
+<div class="photo-upload-section">
+<input type="file" id="planetUpload" class="photo-upload-input" accept="image/*">
+<button class="photo-upload-btn" id="planetUploadBtn">
+🌍 Agregar Planeta
+</button>
+</div>
+
+<div id="planetPostsList"></div>
+</section>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav>
+<div class="nav-item active" data-view="view-d1">
+<div class="nav-icon">📝</div>
+<div>Notas</div>
+</div>
+
+<div class="nav-item" data-view="view-d2">
+<div class="nav-icon">📋</div>
+<div>Tareas</div>
+</div>
+
+<div class="nav-center" id="menuButton">
+Δδ
+</div>
+
+<div class="nav-item" data-view="view-z1">
+<div class="nav-icon">🔭</div>
+<div>Fotos</div>
+</div>
+
+<div class="nav-item" data-view="view-z2">
+<div class="nav-icon">🪐</div>
+<div>Planetas</div>
+</div>
+</nav>
+
+<!-- OVERLAY MENU -->
+<div class="overlay" id="overlay">
+<div class="menu">
+<h2>⚙️ Menú</h2>
+<div class="menu-option" id="clearNotes">🗑️ Borrar todas las notas</div>
+<div class="menu-option" id="clearTasks">✅ Borrar todas las tareas</div>
+<div class="menu-option" id="clearPhotos">📷 Borrar todas las fotos</div>
+<div class="menu-option" id="clearPlanets">🪐 Borrar todos los planetas</div>
+<div class="menu-option" id="exportData">💾 Exportar datos</div>
+<div class="menu-option" id="resetApp">🔄 Reiniciar app</div>
+<div class="menu-option" id="closeMenu">✕ Cerrar</div>
+</div>
+</div>
+
+<script>
+// STORAGE HELPER para comprimir imágenes
+function compressImage(file, maxWidth = 800) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = (e) => {
+const img = new Image();
+img.onload = () => {
+const canvas = document.createElement('canvas');
+let width = img.width;
+let height = img.height;
+
+if (width > maxWidth) {
+height = (height * maxWidth) / width;
+width = maxWidth;
+}
+
+canvas.width = width;
+canvas.height = height;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(img, 0, 0, width, height);
+
+// Comprimir a 0.7 de calidad
+resolve(canvas.toDataURL('image/jpeg', 0.7));
+};
+img.onerror = reject;
+img.src = e.target.result;
+};
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+
+// NAVIGATION
+const navItems = document.querySelectorAll(".nav-item");
+const views = document.querySelectorAll(".view");
+const menuButton = document.getElementById("menuButton");
+const overlay = document.getElementById("overlay");
+
+navItems.forEach(item => {
+item.addEventListener("click", () => {
+const target = item.dataset.view;
+views.forEach(v => v.classList.remove("active"));
+document.getElementById(target).classList.add("active");
+navItems.forEach(n => n.classList.remove("active"));
+item.classList.add("active");
+localStorage.setItem("activeView", target);
+});
+});
+
+menuButton.addEventListener("click", () => {
+overlay.classList.toggle("active");
+});
+
+overlay.addEventListener("click", (e) => {
+if (e.target === overlay) overlay.classList.remove("active");
+});
+
+document.getElementById("closeMenu").addEventListener("click", () => {
+overlay.classList.remove("active");
+});
+
+// NOTES FUNCTIONALITY
+let notes = JSON.parse(localStorage.getItem("notes") || "[]");
+
+function renderNotes() {
+const notesList = document.getElementById("notesList");
+if (notes.length === 0) {
+notesList.innerHTML = '<div class="empty-notes">No hay notas guardadas</div>';
+return;
+}
+notesList.innerHTML = notes.map((note, i) => `
+<div class="note-item">
+<button class="note-delete" onclick="deleteNote(${i})">×</button>
+<div class="note-item-text">${note.text}</div>
+<div class="note-item-date">${note.date}</div>
+</div>
+`).join('');
+}
+
+document.getElementById("saveNote").addEventListener("click", () => {
+const text = document.getElementById("noteInput").value.trim();
+if (!text) return;
+
+notes.unshift({
+text,
+date: new Date().toLocaleString('es-ES', {
+year: 'numeric', month: 'short', day: 'numeric',
+hour: '2-digit', minute: '2-digit'
+})
+});
+localStorage.setItem("notes", JSON.stringify(notes));
+document.getElementById("noteInput").value = '';
+renderNotes();
+});
+
+function deleteNote(i) {
+notes.splice(i, 1);
+localStorage.setItem("notes", JSON.stringify(notes));
+renderNotes();
+}
+
+document.getElementById("clearNotes").addEventListener("click", () => {
+if (confirm("¿Borrar todas las notas?")) {
+notes = [];
+localStorage.setItem("notes", JSON.stringify(notes));
+renderNotes();
+overlay.classList.remove("active");
+}
+});
+
+// CALENDAR
+let currentDate = new Date();
+
+function renderCalendar() {
+const year = currentDate.getFullYear();
+const month = currentDate.getMonth();
+
+document.getElementById("calendarMonth").textContent =
+new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const today = new Date();
+
+let html = ['D', 'L', 'M', 'X', 'J', 'V', 'S'].map(d =>
+`<div class="calendar-day header">${d}</div>`
+).join('');
+
+for (let i = 0; i < firstDay; i++) {
+html += '<div class="calendar-day"></div>';
+}
+
+for (let day = 1; day <= daysInMonth; day++) {
+const isToday = day === today.getDate() &&
+month === today.getMonth() &&
+year === today.getFullYear();
+html += `<div class="calendar-day ${isToday ? 'today' : ''}">${day}</div>`;
+}
+
+document.getElementById("calendarGrid").innerHTML = html;
+}
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+currentDate.setMonth(currentDate.getMonth() - 1);
+renderCalendar();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+currentDate.setMonth(currentDate.getMonth() + 1);
+renderCalendar();
+});
+
+// TASKS
+let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+
+function renderTasks() {
+const taskList = document.getElementById("taskList");
+if (tasks.length === 0) {
+taskList.innerHTML = '<div class="empty-notes">No hay tareas</div>';
+return;
+}
+taskList.innerHTML = tasks.map((task, i) => `
+<div class="task-item">
+<div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask(${i})"></div>
+<div class="task-text ${task.completed ? 'completed' : ''}">${task.text}</div>
+<button class="task-delete" onclick="deleteTask(${i})">×</button>
+</div>
+`).join('');
+}
+
+document.getElementById("addTask").addEventListener("click", () => {
+const text = document.getElementById("taskInput").value.trim();
+if (!text) return;
+tasks.push({ text, completed: false });
+localStorage.setItem("tasks", JSON.stringify(tasks));
+document.getElementById("taskInput").value = '';
+renderTasks();
+});
+
+document.getElementById("taskInput").addEventListener("keypress", (e) => {
+if (e.key === "Enter") document.getElementById("addTask").click();
+});
+
+function toggleTask(i) {
+tasks[i].completed = !tasks[i].completed;
+localStorage.setItem("tasks", JSON.stringify(tasks));
+renderTasks();
+}
+
+function deleteTask(i) {
+tasks.splice(i, 1);
+localStorage.setItem("tasks", JSON.stringify(tasks));
+renderTasks();
+}
+
+document.getElementById("clearTasks").addEventListener("click", () => {
+if (confirm("¿Borrar todas las tareas?")) {
+tasks = [];
+localStorage.setItem("tasks", JSON.stringify(tasks));
+renderTasks();
+overlay.classList.remove("active");
+}
+});
+
+// PHOTO POSTS FUNCTIONALITY
+let photoPosts = JSON.parse(localStorage.getItem("photoPosts") || "[]");
+
+function renderPhotoPosts() {
+const photoPostsList = document.getElementById("photoPostsList");
+if (photoPosts.length === 0) {
+photoPostsList.innerHTML = `
+<div class="empty-state">
+<div class="empty-state-icon">📸</div>
+<h2>Sin fotos aún</h2>
+<p>Agrega tu primera foto con una descripción</p>
+</div>
+`;
+return;
+}
+
+photoPostsList.innerHTML = photoPosts.map((post, i) => `
+<div class="photo-post">
+<div class="photo-post-header">
+<div class="photo-post-info">
+<div class="photo-post-avatar">🔭</div>
+<div class="photo-post-details">
+<div class="photo-post-user">Mi Galería</div>
+<div class="photo-post-date">${post.date}</div>
+</div>
+</div>
+<button class="photo-post-delete" onclick="deletePhotoPost(${i})">×</button>
+</div>
+<img src="${post.image}" alt="Foto" class="photo-post-image" loading="lazy">
+${post.caption ? `<div class="photo-post-caption">${post.caption}</div>` : ''}
+</div>
+`).join('');
+}
+
+document.getElementById("photoUploadBtn").addEventListener("click", () => {
+document.getElementById("photoUpload").click();
+});
+
+document.getElementById("photoUpload").addEventListener("change", async (e) => {
+const file = e.target.files[0];
+if (!file) return;
+
+try {
+const compressedImage = await compressImage(file);
+const caption = document.getElementById("photoCaptionInput").value.trim();
+
+photoPosts.unshift({
+image: compressedImage,
+caption: caption,
+date: new Date().toLocaleString('es-ES', {
+year: 'numeric', month: 'short', day: 'numeric',
+hour: '2-digit', minute: '2-digit'
+})
+});
+
+localStorage.setItem("photoPosts", JSON.stringify(photoPosts));
+document.getElementById("photoCaptionInput").value = '';
+renderPhotoPosts();
+} catch (error) {
+alert('Error al cargar la imagen. Intenta con una imagen más pequeña.');
+console.error(error);
+}
+e.target.value = '';
+});
+
+function deletePhotoPost(i) {
+if (confirm("¿Eliminar esta foto?")) {
+photoPosts.splice(i, 1);
+localStorage.setItem("photoPosts", JSON.stringify(photoPosts));
+renderPhotoPosts();
+}
+}
+
+document.getElementById("clearPhotos").addEventListener("click", () => {
+if (confirm("¿Borrar todas las fotos?")) {
+photoPosts = [];
+localStorage.setItem("photoPosts", JSON.stringify(photoPosts));
+renderPhotoPosts();
+overlay.classList.remove("active");
+}
+});
+
+// PLANET POSTS FUNCTIONALITY
+let planetPosts = JSON.parse(localStorage.getItem("planetPosts") || "[]");
+const planetNames = ["Mercurio ☿️", "Venus ♀️", "Tierra 🌍", "Marte ♂️", "Júpiter ♃", "Saturno ♄", "Urano ♅", "Neptuno ♆", "Plutón ♇"];
+
+function renderPlanetPosts() {
+const planetPostsList = document.getElementById("planetPostsList");
+if (planetPosts.length === 0) {
+planetPostsList.innerHTML = `
+<div class="empty-state">
+<div class="empty-state-icon">🪐</div>
+<h2>Sistema Solar Vacío</h2>
+<p>Comienza a construir tu sistema solar</p>
+</div>
+`;
+return;
+}
+
+planetPostsList.innerHTML = planetPosts.map((post, i) => `
+<div class="planet-post">
+<div class="photo-post-header">
+<div class="photo-post-info">
+<div class="photo-post-avatar">🪐</div>
+<div class="photo-post-details">
+<div class="photo-post-user">Sistema Solar</div>
+<div class="photo-post-date">${post.date}</div>
+</div>
+</div>
+<button class="photo-post-delete" onclick="deletePlanetPost(${i})">×</button>
+</div>
+<div class="planet-post-image-container">
+<img src="${post.image}" alt="${post.name}" class="planet-post-image" loading="lazy">
+</div>
+<div class="planet-post-footer">
+<div class="planet-post-name">${post.name}</div>
+<div class="planet-post-info">Planeta #${i + 1} del sistema</div>
+</div>
+</div>
+`).join('');
+}
+
+document.getElementById("planetUploadBtn").addEventListener("click", () => {
+document.getElementById("planetUpload").click();
+});
+
+document.getElementById("planetUpload").addEventListener("change", async (e) => {
+const file = e.target.files[0];
+if (!file) return;
+
+try {
+const compressedImage = await compressImage(file, 400);
+const planetIndex = planetPosts.length % planetNames.length;
+
+planetPosts.unshift({
+image: compressedImage,
+name: planetNames[planetIndex],
+date: new Date().toLocaleString('es-ES', {
+year: 'numeric', month: 'short', day: 'numeric',
+hour: '2-digit', minute: '2-digit'
+})
+});
+
+localStorage.setItem("planetPosts", JSON.stringify(planetPosts));
+renderPlanetPosts();
+} catch (error) {
+alert('Error al cargar la imagen. Intenta con una imagen más pequeña.');
+console.error(error);
+}
+e.target.value = '';
+});
+
+function deletePlanetPost(i) {
+if (confirm("¿Eliminar este planeta?")) {
+planetPosts.splice(i, 1);
+localStorage.setItem("planetPosts", JSON.stringify(planetPosts));
+renderPlanetPosts();
+}
+}
+
+document.getElementById("clearPlanets").addEventListener("click", () => {
+if (confirm("¿Borrar todos los planetas?")) {
+planetPosts = [];
+localStorage.setItem("planetPosts", JSON.stringify(planetPosts));
+renderPlanetPosts();
+overlay.classList.remove("active");
+}
+});
+
+// EXPORT DATA FUNCTIONALITY
+document.getElementById("exportData").addEventListener("click", () => {
+const data = {
+notes,
+tasks,
+photoPostsCount: photoPosts.length,
+planetPostsCount: planetPosts.length,
+exportDate: new Date().toISOString()
+};
+const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `backup-${new Date().toISOString().split('T')[0]}.json`;
+a.click();
+URL.revokeObjectURL(url);
+overlay.classList.remove("active");
+});
+
+// RESET APP
+document.getElementById("resetApp").addEventListener("click", () => {
+if (confirm("¿Estás seguro de reiniciar toda la app? Se perderán todos los datos.")) {
+localStorage.clear();
+location.reload();
+}
+});
+
+// RESTORE STATE
+const savedView = localStorage.getItem("activeView");
+if (savedView) {
+navItems.forEach(n => {
+n.classList.toggle("active", n.dataset.view === savedView);
+});
+views.forEach(v => {
+v.classList.toggle("active", v.id === savedView);
+});
+}
+
+// INITIALIZE
+renderNotes();
+renderCalendar();
+renderTasks();
+renderPhotoPosts();
+renderPlanetPosts();
+</script>
 
 </body>
 </html>
